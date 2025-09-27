@@ -2,5 +2,5 @@
 [] ctx:retailer "Delfour" ;
    ctx:device   "self-scanner" ;
    ctx:event    "pick_up_scanner" ;
-   ctx:timestamp "2025-09-27T10:06:13.024890+00:00" ;
-   ctx:expiresAt "2025-09-27T12:06:13.024890+00:00" .
+   ctx:timestamp "2025-09-27T10:30:26.637410+00:00" ;
+   ctx:expiresAt "2025-09-27T12:30:26.637410+00:00" .
