@@ -1,0 +1,7 @@
+2025-09-27T10:06:13.025119+00:00	PICKUP	scanner="self-scanner" retailer="Delfour"
+2025-09-27T10:06:13.052595+00:00	AGENT-DIALOG	capabilities received from Delfour
+2025-09-27T10:06:13.135363+00:00	DESENSITIZE	need=needsLowSugar written
+2025-09-27T10:06:13.219517+00:00	INSIGHT	neutral low-sugar envelope emitted
+2025-09-27T10:06:13.301626+00:00	SCAN	product="Classic Tea Biscuits" → suggest="Low-Sugar Tea Biscuits"
+2025-09-27T10:06:13.301709+00:00	RUNTIME	banner written
+2025-09-27T10:06:13.319386+00:00	DROP	scanner returned; session closed
