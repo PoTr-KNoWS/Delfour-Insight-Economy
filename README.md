@@ -1,4 +1,4 @@
-# Delfour Insight Economy — README
+# Delfour Insight Economy
 
 A tiny, reproducible demo of **privacy-preserving retail insights** built as a **multi-program pipeline** that talks via RDF/N3 files and uses the **EYE reasoner**. It follows the P3 pattern (**Answer / Reason / Check**) and simulates a self-scanner shopping session that derives a **neutral “low-sugar” insight** from sensitive POD data—without leaking medical terms.
 
