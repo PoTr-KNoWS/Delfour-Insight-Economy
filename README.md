@@ -65,7 +65,6 @@ The original Python pipeline uses a file bus (`data/bus/`). In this browser demo
    * **expiry guard** (marks `ex:Expired` when `expiresAtStr < nowStr`)
    * **enforcement rules** (Allowed/Blocked)
    * **audit rules** (emit `act:Decision`, and at close `act:Duty "delete_due"`)
-   * **fallback** (if no decision derived, emit `Blocked (no_decision)`)
 7. **SHOPPING** — If Allowed, rule suggests an alternative with lower sugar (`math:` built-ins; typed decimals).
 8. **DROP & CLOSE-OUT** — Re-evaluate expiry at the end and append a `delete_due` duty to the audit if applicable.
 
@@ -83,7 +82,6 @@ The original Python pipeline uses a file bus (`data/bus/`). In this browser demo
   * `expiry_guard` → mark `ex:Expired` if `expiresAtStr < nowStr` (uses `string:lessThan`)
   * `odrl_enforce` → `ex:Allowed` / `ex:Blocked` from policy + request (+ expired)
   * `audit_rules` → `act:Decision` and close-out `act:Duty "delete_due"`
-  * `audit_fallback` → `Blocked (no_decision)` if a request exists but no decision derived
   * `shopping_rule` → when Allowed and scanned product’s sugar ≥ threshold, attach note and alternative
 
 **Prefix map** used throughout:
@@ -145,7 +143,6 @@ schema: http://schema.org/
 
 * **Blank page** — Ensure network access for the Pyodide and eye-js CDNs; open DevTools Console for errors.
 * **`illegal_token` parsing errors** — Usually a prefix typo (ensure `@prefix schema: <…> .` has a space) or SPARQL `FILTER` (not used here; we rely on `math:`/`str:` built-ins).
-* **AUTH says “No explicit decision”** — This build includes a **fallback** rule that guarantees a decision (`Blocked (no_decision)`) if the policy/request didn’t match. If removed, re-include the policy derivation rule in the same AUTH bundle.
 
 ---
 

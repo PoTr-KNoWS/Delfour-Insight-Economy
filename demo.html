@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Delfour Insight Economy — Python + eye-js (Browser)</title>
+    <title>Delfour Insight Economy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Tailwind (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,7 +15,7 @@
   <body class="bg-gradient-to-b from-slate-50 to-white text-slate-900 min-h-screen">
     <main class="max-w-6xl mx-auto p-6">
       <header class="mb-6">
-        <h1 class="text-2xl font-bold">Delfour Insight Economy — Python in the Browser (Pyodide + eye-js)</h1>
+        <h1 class="text-2xl font-bold">Delfour Insight Economy</h1>
         <p class="text-slate-600">
           Runs fully client-side. Reasoning by <span class="font-mono">eye-js</span>; orchestration in Python (Pyodide).
         </p>
@@ -303,19 +303,6 @@ audit_rules = """@prefix ex:   <https://example.org/enforce#> .
 => { _:a a act:Duty ; act:type "delete_due" ; act:at ?now ; act:target ?ins . } .
 """
 
-audit_fallback = """@prefix log: <http://www.w3.org/2000/10/swap/log#> .
-@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
-@prefix act:  <https://example.org/activity#> .
-@prefix ex:   <https://example.org/enforce#> .
-{
-  {} log:semantics ?KB .
-  ?R odrl:action odrl:use .
-  ?KB log:notIncludes { ?R a act:Decision } .
-  [] ex:nowStr ?now .
-}
-=> { _:a a act:Decision ; act:at ?now ; act:request ?R ; act:outcome "Blocked" ; act:reason "no_decision" } .
-"""
-
 shopping_rule = """@prefix ins:   <https://example.org/insight#> .
 @prefix schema: <http://schema.org/> .
 @prefix shop:  <https://example.org/shop#> .
@@ -371,7 +358,7 @@ async def run_pipeline():
     now_ttl = f'@prefix ex: <https://example.org/enforce#> .\\n[] ex:nowStr "{now}".\\n'
     req_ttl = '@prefix odrl: <http://www.w3.org/ns/odrl/2/> .\\n@prefix req: <https://example.org/request#> .\\nreq:r1 odrl:action odrl:use ; odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand "shopping_assist" ] .\\n'
     auth_out = await n3reasoner(
-        [insight, odrl_from_insight, now_ttl, req_ttl, expiry_guard, odrl_enforce, audit_rules, audit_fallback],
+        [insight, odrl_from_insight, now_ttl, req_ttl, expiry_guard, odrl_enforce, audit_rules],
         None,
         to_js({"output":"derivations", "outputType":"string"})
     )
@@ -392,10 +379,7 @@ async def run_pipeline():
         log("AUTH", "No explicit decision (check policy/request)")
 
     # Pretty audit text
-    AUD_PREFIX = ('@prefix act:  <https://example.org/activity#> .\\n'
-                  '@prefix ex:   <https://example.org/enforce#> .\\n'
-                  '@prefix odrl: <http://www.w3.org/ns/odrl/2/> .\\n')
-    _delfourHelpers.setAudit(AUD_PREFIX + auth_out)
+    _delfourHelpers.setAudit(auth_out)
     log("AUDIT", "authorization decision recorded")
 
     # 05 shopping — only if not blocked
@@ -456,7 +440,7 @@ async def run_pipeline():
     close_now = f'@prefix ex: <https://example.org/enforce#> .\\n[] ex:nowStr "{now2}".\\n'
     close_out = await n3reasoner([insight, close_now, expiry_guard, audit_rules], None, to_js({"output":"derivations", "outputType":"string"}))
     if close_out.strip():
-        _delfourHelpers.setAudit((AUD_PREFIX + auth_out).strip() + "\\n" + close_out.strip())
+        _delfourHelpers.setAudit(auth_out.strip() + "\\n" + close_out.strip())
         log("AUDIT", "close-out appended" + (" (delete_due)" if ("act:Duty" in close_out and 'act:type "delete_due"' in close_out) else ""))
 
     # Reason & Checks
@@ -469,7 +453,7 @@ async def run_pipeline():
         ("scope_has_device_event_expiry", all(k in txt for k in ["scopedevice","scopeevent","expiresat"])),
         ("runtime_present", True),
         ("behavior_suggests_on_high_sugar", bool(alt_qname)),
-        ("audit_has_decision", True if (("activity#Decision" in (AUD_PREFIX+auth_out)) or ("act:Decision" in (AUD_PREFIX+auth_out))) else False),
+        ("audit_has_decision", True if (("activity#Decision" in auth_out) or ("act:Decision" in auth_out)) else False),
     ]
     _delfourHelpers.showChecks(checks)
 
