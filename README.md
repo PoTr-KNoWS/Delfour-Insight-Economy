@@ -41,7 +41,7 @@ The original Python pipeline uses a file bus (`data/bus/`). In this browser demo
 | `events.ttl`         | Human-readable timeline events (pickup, auth, scan, audit, drop).             |
 | `insight.ttl`        | The **retailer-facing** neutral INSIGHT envelope.                             |
 | `odrl.ttl`           | Policy derived from the INSIGHT (shown via Timeline; not physically written). |
-| `now.ttl`            | `[] ex:nowStr "…ISO…" .` — string time fact for rule comparisons.             |
+| `now.ttl`            | `[] ex:now "…ISO…" .` — string time fact for rule comparisons.                |
 | `request.ttl`        | `req:r1 odrl:action odrl:use; … purpose "shopping_assist".`                   |
 | `scan.ttl`           | The simulated scanned product `[] shop:scannedProduct prod:… .`               |
 | `runtime_out.json`   | Device banner JSON (headline, note, suggested alternative).                   |
@@ -51,7 +51,7 @@ The original Python pipeline uses a file bus (`data/bus/`). In this browser demo
 
 ### Pipeline (steps inside `demo.html`)
 
-1. **PICKUP** — Build `ctx:` context (retailer, device, event, timestamp, **expiresAt**, **expiresAtStr**).
+1. **PICKUP** — Build `ctx:` context (retailer, device, event, timestamp, **expiresAt**).
 2. **AGENT-DIALOG** — Stub capability exchange.
 3. **DESENSITIZE** — Rule: `health:Diabetes ⇒ need:needsLowSugar true.`
 4. **DERIVE INSIGHT** — From need + context → `ins:Insight` (metric/threshold/scope/expiry).
@@ -60,9 +60,9 @@ The original Python pipeline uses a file bus (`data/bus/`). In this browser demo
 
    * the **Insight**
    * the **policy-from-insight rule** (policy is derived inside the same run)
-   * **now** (`ex:nowStr`)
+   * **now** (`ex:now`)
    * **request** (`use@shopping_assist`)
-   * **expiry guard** (marks `ex:Expired` when `expiresAtStr < nowStr`)
+   * **expiry guard** (marks `ex:Expired` when `expiresAt < now`)
    * **enforcement rules** (Allowed/Blocked)
    * **audit rules** (emit `act:Decision`, and at close `act:Duty "delete_due"`)
 7. **SHOPPING** — If Allowed, rule suggests an alternative with lower sugar (`math:` built-ins; typed decimals).
@@ -77,9 +77,9 @@ The original Python pipeline uses a file bus (`data/bus/`). In this browser demo
 * **Rules:**
 
   * `desensitize` → `need:needsLowSugar true`
-  * `derive_insight` → neutral `ins:Insight` with `ins:expiresAt` + `ins:expiresAtStr`
+  * `derive_insight` → neutral `ins:Insight` with `ins:expiresAt`
   * `policy_from_insight` → ODRL permission/prohibition/duty targeting the Insight
-  * `expiry_guard` → mark `ex:Expired` if `expiresAtStr < nowStr` (uses `string:lessThan`)
+  * `expiry_guard` → mark `ex:Expired` if `expiresAt < now` (uses `math:lessThan`)
   * `odrl_enforce` → `ex:Allowed` / `ex:Blocked` from policy + request (+ expired)
   * `audit_rules` → `act:Decision` and close-out `act:Duty "delete_due"`
   * `shopping_rule` → when Allowed and scanned product’s sugar ≥ threshold, attach note and alternative
