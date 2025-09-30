@@ -1,15 +1,13 @@
 # Delfour Insight Economy — Browser Demo (Pyodide + eye-js)
 
-A single-file, **fully client-side** prototype of the Delfour “insight economy” pipeline.
+A **fully client-side** prototype of the Delfour “insight economy” pipeline: https://potr-knows.github.io/Delfour-Insight-Economy/demo.html
 Reasoning runs in your browser via **eye-js** (EYE in WebAssembly); orchestration is written in **Python** running in **Pyodide**. No servers, no build.
-
-> **File:** `demo.html` (drop it anywhere you can serve static files, or just open from disk)
 
 ---
 
 ## Quick start
 
-1. Open `demo.html` in a modern browser (Chromium, Firefox, Safari).
+1. Open [demo.html](https://potr-knows.github.io/Delfour-Insight-Economy/demo.html) in a modern browser (Chromium, Firefox, Safari).
 2. Click **Run Demo**.
 3. Watch the **Timeline**, **Insight**, **Runtime**, **Reason Why**, **Checks**, and **Audit** panels populate.
 
