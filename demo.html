@@ -190,8 +190,7 @@ derive_rule = """@prefix need: <https://example.org/need#> .
   ?c ctx:retailer "Delfour";
      ctx:device   "self-scanner";
      ctx:event    "pick_up_scanner";
-     ctx:expiresAt ?exp;
-     ctx:expiresAtStr ?expStr.
+     ctx:expiresAt ?exp.
 }
 =>
 {
@@ -202,8 +201,7 @@ derive_rule = """@prefix need: <https://example.org/need#> .
     ins:scopeDevice      "self-scanner" ;
     ins:scopeEvent       "pick_up_scanner" ;
     ins:retailer         "Delfour" ;
-    ins:expiresAt        ?exp ;
-    ins:expiresAtStr     ?expStr .
+    ins:expiresAt        ?exp .
 }.
 """
 
@@ -281,11 +279,15 @@ odrl_enforce = """@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 { ?req a ex:Blocked ; ex:reason "expired" . } .
 """
 
-expiry_guard = """@prefix ins: <https://example.org/insight#> .
-@prefix ex:  <https://example.org/enforce#> .
-@prefix str: <http://www.w3.org/2000/10/swap/string#> .
-# Mark Expired when exp < now (ISO strings compare lexicographically)
-{ ?ins a ins:Insight ; ins:expiresAtStr ?exp . [] ex:nowStr ?now . ?exp str:lessThan ?now . }
+expiry_guard = """@prefix ins:  <https://example.org/insight#> .
+@prefix ex:   <https://example.org/enforce#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+# Mark Expired when exp < now (typed xsd:dateTime comparison)
+{
+  ?ins a ins:Insight ; ins:expiresAt ?exp .
+  []   ex:now ?now .
+  ?exp math:lessThan ?now .
+}
 => { ?ins a ex:Expired . } .
 """
 
@@ -293,14 +295,27 @@ audit_rules = """@prefix ex:   <https://example.org/enforce#> .
 @prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 @prefix act:  <https://example.org/activity#> .
 
-{ ?req a ex:Allowed . [] ex:nowStr ?now . }
+{ ?req a ex:Allowed . [] ex:now ?now . }
 => { _:a a act:Decision ; act:at ?now ; act:request ?req ; act:outcome "Allowed" . } .
 
-{ ?req a ex:Blocked ; ex:reason ?r . [] ex:nowStr ?now . }
+{ ?req a ex:Blocked ; ex:reason ?r . [] ex:now ?now . }
 => { _:a a act:Decision ; act:at ?now ; act:request ?req ; act:outcome "Blocked" ; act:reason ?r . } .
 
-{ ?ins a ex:Expired . [] ex:nowStr ?now . }
+{ ?ins a ex:Expired . [] ex:now ?now . }
 => { _:a a act:Duty ; act:type "delete_due" ; act:at ?now ; act:target ?ins . } .
+"""
+
+audit_fallback = """@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix act:  <https://example.org/activity#> .
+@prefix ex:   <https://example.org/enforce#> .
+{
+  {} log:semantics ?KB .
+  ?R odrl:action odrl:use .
+  ?KB log:notIncludes { ?R a act:Decision } .
+  [] ex:now ?now .
+}
+=> { _:a a act:Decision ; act:at ?now ; act:request ?R ; act:outcome "Blocked" ; act:reason "no_decision" } .
 """
 
 shopping_rule = """@prefix ins:   <https://example.org/insight#> .
@@ -324,12 +339,12 @@ def build_context():
     now = datetime.now(timezone.utc)
     exp = now + timedelta(hours=2)
     return f"""@prefix ctx: <https://example.org/context#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 [] ctx:retailer "Delfour" ;
    ctx:device   "self-scanner" ;
    ctx:event    "pick_up_scanner" ;
-   ctx:timestamp "{now.isoformat()}" ;
-   ctx:expiresAt "{exp.isoformat()}"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-   ctx:expiresAtStr "{exp.isoformat()}" .
+   ctx:timestamp "{now.isoformat()}"^^xsd:dateTime ;
+   ctx:expiresAt "{exp.isoformat()}"^^xsd:dateTime .
 """
 
 n3reasoner = _delfourHelpers.n3reasoner
@@ -355,10 +370,14 @@ async def run_pipeline():
 
     # 05 auth: now + request + expiry guard + enforcement + audit (+policy rule inline) + fallback
     now = nowISO()
-    now_ttl = f'@prefix ex: <https://example.org/enforce#> .\\n[] ex:nowStr "{now}".\\n'
+    now_ttl = (
+        '@prefix ex: <https://example.org/enforce#> .\\n'
+        '@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\\n'
+        f'[] ex:now "{now}"^^xsd:dateTime .\\n'
+    )
     req_ttl = '@prefix odrl: <http://www.w3.org/ns/odrl/2/> .\\n@prefix req: <https://example.org/request#> .\\nreq:r1 odrl:action odrl:use ; odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand "shopping_assist" ] .\\n'
     auth_out = await n3reasoner(
-        [insight, odrl_from_insight, now_ttl, req_ttl, expiry_guard, odrl_enforce, audit_rules],
+        [insight, odrl_from_insight, now_ttl, req_ttl, expiry_guard, odrl_enforce, audit_rules, audit_fallback],
         None,
         to_js({"output":"derivations", "outputType":"string"})
     )
@@ -437,7 +456,11 @@ async def run_pipeline():
     # 06 drop + close-out duty audit (reuse audit_rules + expiry_guard with new now)
     log("DROP", "scanner returned; session closed")
     now2 = nowISO()
-    close_now = f'@prefix ex: <https://example.org/enforce#> .\\n[] ex:nowStr "{now2}".\\n'
+    close_now = (
+        '@prefix ex: <https://example.org/enforce#> .\\n'
+        '@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\\n'
+        f'[] ex:now "{now2}"^^xsd:dateTime .\\n'
+    )
     close_out = await n3reasoner([insight, close_now, expiry_guard, audit_rules], None, to_js({"output":"derivations", "outputType":"string"}))
     if close_out.strip():
         _delfourHelpers.setAudit(auth_out.strip() + "\\n" + close_out.strip())
