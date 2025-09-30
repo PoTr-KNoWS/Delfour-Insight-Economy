@@ -1,4 +1,4 @@
-# Delfour Insight Economy — Browser Demo
+# Delfour Insight Economy
 
 A **fully client-side** prototype of the Delfour “insight economy” pipeline.
 Reasoning runs in your browser via **eye-js** (EYE in WebAssembly); orchestration is written in **Python** running in **Pyodide**. No servers, no build.
