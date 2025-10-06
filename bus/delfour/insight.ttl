@@ -8,4 +8,4 @@
 <https://example.org/insight/delfour> ins:scopeDevice "self-scanner".
 <https://example.org/insight/delfour> ins:scopeEvent "pick_up_scanner".
 <https://example.org/insight/delfour> ins:retailer "Delfour".
-<https://example.org/insight/delfour> ins:expiresAt "2025-10-06T23:14:27.938479+00:00"^^xsd:dateTime.
+<https://example.org/insight/delfour> ins:expiresAt "2025-10-06T23:26:18.951084+00:00"^^xsd:dateTime.

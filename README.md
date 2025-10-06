@@ -83,20 +83,20 @@ No network calls; everything is client-side.
 
 ```bash
 # 1) Seed a session catalog on the scanner
-python scanner.py --init --session S1
+python scanner.py --init --session delfour
 
 # 2) Produce and SIGN the envelope on the phone
-python phone.py --session S1 --keydir ./keys
+python phone.py --session delfour --keydir ./keys
 # (keydir optional; makes the key persistent across runs)
 
 # 3) Verify, authorize, suggest, and audit on the scanner
-python scanner.py --session S1
+python scanner.py --session delfour
 
 # Inspect:
-tree ./bus/S1
-cat bus/S1/envelope.sig.json
-cat bus/S1/audit.ttl
-cat bus/S1/banner.json
+tree ./bus/delfour
+cat bus/delfour/envelope.sig.json
+cat bus/delfour/audit.ttl
+cat bus/delfour/banner.json
 ```
 
 ### CLI reference
@@ -170,7 +170,7 @@ Writes: `catalog.ttl` (init), `audit.ttl`, `banner.json`.
   Install EYE or set `EYE_CMD`:
 
   ```bash
-  EYE_CMD=/usr/local/bin/eye python phone.py --session S1
+  EYE_CMD=/usr/local/bin/eye python phone.py --session delfour
   ```
 
 * **Prefix errors (EYE)**

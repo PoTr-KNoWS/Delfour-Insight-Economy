@@ -9,8 +9,8 @@ scanner.py — retailer scanner (privacy-first)
 - writes checks.json (harness) with pass/fail booleans
 
 Usage:
-  python scanner.py --init --session S123
-  python scanner.py --session S123
+  python scanner.py --init --session delfour
+  python scanner.py --session delfour
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ except Exception as e:
 def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bus", default="./bus", help="Databus root (default: ./bus)")
-    ap.add_argument("--session", required=True, help="Session id (e.g., S123)")
+    ap.add_argument("--session", required=True, help="Session id (e.g., delfour)")
     ap.add_argument("--init", action="store_true", help="Write catalog for this session and exit")
     return ap.parse_args()
 

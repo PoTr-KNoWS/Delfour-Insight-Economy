@@ -22,7 +22,7 @@
       <span id="status" class="text-sm text-slate-600"></span>
       <label class="ml-4 text-sm text-slate-700 flex items-center gap-2">
         Session:
-        <input id="sessionId" value="S1" class="px-2 py-1 border rounded-md" />
+        <input id="sessionId" value="delfour" class="px-2 py-1 border rounded-md" />
       </label>
     </div>
 
@@ -436,7 +436,7 @@ async def run_demo(session_id:str):
       runBtn.disabled = true;
       setStatus("Running…");
       try{
-        const sess = $("sessionId").value || "S1";
+        const sess = $("sessionId").value || "delfour";
         await pyodide.runPythonAsync(py + `\nawait run_demo("${sess}")\n`);
         setStatus("Done.");
       }catch(e){

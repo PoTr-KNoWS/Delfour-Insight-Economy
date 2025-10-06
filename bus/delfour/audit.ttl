@@ -3,6 +3,6 @@ _:e_sk_1_1 ex:target <https://example.org/insight/delfour>.
 req:r1 a ex:Allowed.
 req:r1 ex:target <https://example.org/insight/delfour>.
 _:sk_0 a act:Decision.
-_:sk_0 act:at "2025-10-06T21:14:28.152562+00:00"^^xsd:dateTime.
+_:sk_0 act:at "2025-10-06T21:26:19.127268+00:00"^^xsd:dateTime.
 _:sk_0 act:request req:r1.
 _:sk_0 act:outcome "Allowed".

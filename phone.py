@@ -9,9 +9,9 @@ phone.py — shopper device (privacy-first)
 - writes a human "Reason Why" as reason.txt  (demo-only; keep on device in prod)
 
 Usage:
-  python phone.py --session S123
-  python phone.py --bus ./mybus --session S123
-  python phone.py --session S123 --keydir ./keys   # optional persistent key storage
+  python phone.py --session delfour
+  python phone.py --bus ./mybus --session delfour
+  python phone.py --session delfour --keydir ./keys   # optional persistent key storage
 
 Env:
   EYE_CMD=/path/to/eye  (optional; default: 'eye')
@@ -32,7 +32,7 @@ except Exception as e:
 def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bus", default="./bus", help="Databus root (default: ./bus)")
-    ap.add_argument("--session", required=True, help="Session id (e.g., S123)")
+    ap.add_argument("--session", required=True, help="Session id (e.g., delfour)")
     ap.add_argument("--retailer", default="Delfour")
     ap.add_argument("--device", default="self-scanner")
     ap.add_argument("--event", default="pick_up_scanner")
