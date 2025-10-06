@@ -1,8 +1,0 @@
-{
-  "alg": "Ed25519",
-  "keyid": "ed25519:default",
-  "created": "2025-10-06T20:27:15Z",
-  "publicKeyBase64": "0wlMPB0HUjJlBHmFP23b34S+HWnn+d2baIIuF3s1zLM=",
-  "payloadHashSHA256": "811782822a129cd474e97a01a1c38e8b757a6d2ee0a1a56637593b7d1553b920",
-  "signatureBase64": "zL390khgcCtF2tVkqudUOtNIiHnqW+iD2qnDbmEJp4xHGTUp5Anx72Yxf/D7+f+6+YfsP/DyRRsj7PVdkkqXAw=="
-}

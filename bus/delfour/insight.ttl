@@ -1,0 +1,11 @@
+@prefix ins: <https://example.org/insight#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+<https://example.org/insight/delfour> a ins:Insight.
+<https://example.org/insight/delfour> ins:metric "sugar_g_per_serving".
+<https://example.org/insight/delfour> ins:threshold "10.0"^^xsd:decimal.
+<https://example.org/insight/delfour> ins:suggestionPolicy "lower_metric_first_higher_price_ok".
+<https://example.org/insight/delfour> ins:scopeDevice "self-scanner".
+<https://example.org/insight/delfour> ins:scopeEvent "pick_up_scanner".
+<https://example.org/insight/delfour> ins:retailer "Delfour".
+<https://example.org/insight/delfour> ins:expiresAt "2025-10-06T23:14:27.938479+00:00"^^xsd:dateTime.
