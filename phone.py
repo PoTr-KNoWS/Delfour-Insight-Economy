@@ -127,6 +127,8 @@ DERIVE_RULE_TPL = """@prefix need: <https://example.org/need#> .
 ODRL_FROM_INSIGHT_TPL = """@prefix ins:  <https://example.org/insight#> .
 @prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix vocab:   <https://example.org/vocab/> .
+@prefix profile: <https://example.org/profile/> .
 
 {
   %(INS_IRI)s a ins:Insight ;
@@ -138,34 +140,43 @@ ODRL_FROM_INSIGHT_TPL = """@prefix ins:  <https://example.org/insight#> .
 =>
 {
   _:pol a odrl:Policy ;
-        odrl:profile "Delfour-Insight-Policy" ;
+        odrl:profile profile:Delfour-Insight-Policy ;
+
         odrl:permission [
-          odrl:action odrl:use ;
-          odrl:target %(INS_IRI)s ;
+          a odrl:Permission ;
+          odrl:action  odrl:use ;
+          odrl:target  %(INS_IRI)s ;
           odrl:constraint [
+            a odrl:Constraint ;
             odrl:leftOperand  odrl:purpose ;
             odrl:operator     odrl:eq ;
-            odrl:rightOperand "shopping_assist"
+            odrl:rightOperand vocab:shopping_assist
           ]
         ] ;
+
         odrl:prohibition [
-          odrl:action odrl:share ;
-          odrl:target %(INS_IRI)s ;
+          a odrl:Prohibition ;
+          odrl:action  odrl:distribute ;
+          odrl:target  %(INS_IRI)s ;
           odrl:constraint [
+            a odrl:Constraint ;
             odrl:leftOperand  odrl:purpose ;
             odrl:operator     odrl:eq ;
-            odrl:rightOperand "marketing"
+            odrl:rightOperand vocab:marketing
           ]
         ] ;
+
         odrl:duty [
-          odrl:action odrl:delete ;
+          a odrl:Duty ;
+          odrl:action  odrl:delete ;
           odrl:constraint [
+            a odrl:Constraint ;
             odrl:leftOperand  odrl:dateTime ;
             odrl:operator     odrl:eq ;
             odrl:rightOperand ?exp
           ]
         ] .
-}.
+} .
 """
 
 def build_context(retailer: str, device: str, event: str, ttl_hours: float) -> str:

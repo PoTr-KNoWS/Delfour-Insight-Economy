@@ -1,8 +1,8 @@
 {
   "alg": "Ed25519",
   "keyid": "ed25519:default",
-  "created": "2025-10-02T22:32:25Z",
-  "publicKeyBase64": "0Q2aPqVM0WYrWBNIIa9XBkzPhEv7enLhVPJu7qhBbsU=",
-  "payloadHashSHA256": "1682f2368ae3576368cec9a46811c6fd2536971500ed7234488a941abb0e627a",
-  "signatureBase64": "I5VNrvskZU+Zh03RM75soJqKH60iCgC7hG9x6BRodZAEL+dY9yex3XGDovA6d3htfOcWDANyglIVwr+2dsxkAA=="
+  "created": "2025-10-06T20:27:15Z",
+  "publicKeyBase64": "0wlMPB0HUjJlBHmFP23b34S+HWnn+d2baIIuF3s1zLM=",
+  "payloadHashSHA256": "811782822a129cd474e97a01a1c38e8b757a6d2ee0a1a56637593b7d1553b920",
+  "signatureBase64": "zL390khgcCtF2tVkqudUOtNIiHnqW+iD2qnDbmEJp4xHGTUp5Anx72Yxf/D7+f+6+YfsP/DyRRsj7PVdkkqXAw=="
 }

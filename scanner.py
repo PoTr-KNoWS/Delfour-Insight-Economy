@@ -100,17 +100,18 @@ prod:CHOC_150 a schema:Product ; schema:name "85% Dark Chocolate"   ; schema:sku
 ODRL_ENFORCE = """@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 @prefix ins:  <https://example.org/insight#> .
 @prefix ex:   <https://example.org/enforce#> .
+@prefix vocab:   <https://example.org/vocab/> .
 
 {
   ?pol a odrl:Policy ;
        odrl:permission [
          odrl:action odrl:use ;
-         odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:operator odrl:eq ; odrl:rightOperand "shopping_assist" ] ;
+         odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:operator odrl:eq ; odrl:rightOperand vocab:shopping_assist ] ;
          odrl:target ?ins
        ] .
   ?ins a ins:Insight .
   ?req odrl:action odrl:use ;
-       odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand "shopping_assist" ] .
+       odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand vocab:shopping_assist ] .
 }
 =>
 { ?req a ex:Allowed ; ex:target ?ins . } .
@@ -171,10 +172,11 @@ SHOPPING_RULE = """@prefix ins:   <https://example.org/insight#> .
 # Typed runtime request
 REQUEST_USE = """@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 @prefix req:  <https://example.org/request#> .
+@prefix vocab:   <https://example.org/vocab/> .
 
 req:r1 a req:Request ;
       odrl:action odrl:use ;
-      odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand "shopping_assist" ] .
+      odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand vocab:shopping_assist ] .
 """
 
 def build_now(ts_iso: str) -> str:

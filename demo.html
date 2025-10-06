@@ -235,27 +235,29 @@ DERIVE_RULE_TPL = """@prefix need: <https://example.org/need#> .
 ODRL_FROM_INSIGHT_TPL = """@prefix ins:  <https://example.org/insight#> .
 @prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix vocab:   <https://example.org/vocab/> .
+@prefix profile: <https://example.org/profile/> .
 { %(INS_IRI)s a ins:Insight ; ins:expiresAt ?exp ; ins:retailer ?ret ; ins:scopeDevice ?dev ; ins:scopeEvent ?ev . }
 =>
-{ _:pol a odrl:Policy ; odrl:profile "Delfour-Insight-Policy" ;
-  odrl:permission [ odrl:action odrl:use ;
-                    odrl:target %(INS_IRI)s ;
-                    odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:operator odrl:eq ; odrl:rightOperand "shopping_assist" ] ] ;
-  odrl:prohibition [ odrl:action odrl:share ; odrl:target %(INS_IRI)s ;
-                     odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:operator odrl:eq ; odrl:rightOperand "marketing" ] ] ;
-  odrl:duty [ odrl:action odrl:delete ;
-              odrl:constraint [ odrl:leftOperand odrl:dateTime ; odrl:operator odrl:eq ; odrl:rightOperand ?exp ] ] . } .
+{ _:pol a odrl:Policy ; odrl:profile profile:Delfour-Insight-Policy ;
+  odrl:permission [ a odrl:Permission ; odrl:action  odrl:use ; odrl:target  %(INS_IRI)s ;
+                    odrl:constraint [ a odrl:Constraint ; odrl:leftOperand odrl:purpose ; odrl:operator odrl:eq ; odrl:rightOperand vocab:shopping_assist ] ] ;
+  odrl:prohibition [ a odrl:Prohibition ; odrl:action  odrl:distribute ; odrl:target  %(INS_IRI)s ;
+                     odrl:constraint [ a odrl:Constraint ; odrl:leftOperand odrl:purpose ; odrl:operator odrl:eq ; odrl:rightOperand vocab:marketing ] ] ;
+  odrl:duty [ a odrl:Duty ; odrl:action  odrl:delete ;
+              odrl:constraint [ a odrl:Constraint ; odrl:leftOperand odrl:dateTime ; odrl:operator odrl:eq ; odrl:rightOperand ?exp ] ] . } .
 """
 
 ODRL_ENFORCE = """@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 @prefix ins:  <https://example.org/insight#> .
 @prefix ex:   <https://example.org/enforce#> .
+@prefix vocab:   <https://example.org/vocab/> .
 { ?pol a odrl:Policy ;
        odrl:permission [ odrl:action odrl:use ;
-                         odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:operator odrl:eq ; odrl:rightOperand "shopping_assist" ] ;
+                         odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:operator odrl:eq ; odrl:rightOperand vocab:shopping_assist ] ;
                          odrl:target ?ins ] .
   ?ins a ins:Insight .
-  ?req odrl:action odrl:use ; odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand "shopping_assist" ] . }
+  ?req odrl:action odrl:use ; odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand vocab:shopping_assist ] . }
 => { ?req a ex:Allowed ; ex:target ?ins . } .
 { ?req a ex:Allowed ; ex:target ?ins . ?ins a ex:Expired . }
 => { ?req a ex:Blocked ; ex:reason "expired" . } .
@@ -274,8 +276,10 @@ AUDIT_RULES = """@prefix ex:   <https://example.org/enforce#> .
 @prefix req:  <https://example.org/request#> .
 { ?r a ex:Allowed . ?r a req:Request . [] ex:now ?now . }
 => { _:a a act:Decision ; act:at ?now ; act:request ?r ; act:outcome "Allowed" . } .
+
 { ?r a ex:Blocked ; ex:reason ?why . ?r a req:Request . [] ex:now ?now . }
 => { _:a a act:Decision ; act:at ?now ; act:request ?r ; act:outcome "Blocked" ; act:reason ?why . } .
+
 { ?ins a ex:Expired . [] ex:now ?now . }
 => { _:a a act:Duty ; act:type "delete_due" ; act:at ?now ; act:target ?ins . } .
 """
@@ -293,8 +297,9 @@ SHOPPING_RULE = """@prefix ins:   <https://example.org/insight#> .
 
 REQUEST_USE = """@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 @prefix req:  <https://example.org/request#> .
+@prefix vocab:   <https://example.org/vocab/> .
 req:r1 a req:Request ; odrl:action odrl:use ;
-      odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand "shopping_assist" ] .
+      odrl:constraint [ odrl:leftOperand odrl:purpose ; odrl:rightOperand vocab:shopping_assist ] .
 """
 
 CATALOG = """@prefix prod:   <https://example.org/product#> .
